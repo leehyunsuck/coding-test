@@ -81,15 +81,19 @@ public class OrderController {
                 .products(products)
                 .build();
 
-        Order placeOrderResult = orderService.placeOrder(customerName, cusomerEmail, productIds, quantities);
+        try {
+            Order placeOrderResult = orderService.placeOrder(customerName, cusomerEmail, productIds, quantities);
 
-        if (placeOrderResult.getStatus().equals(Order.OrderStatus.CANCELLED)) {
+            if (placeOrderResult == null) {
+                throw new RuntimeException();
+            }
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(result);
         }
 
         return ResponseEntity.status(201).body(result);
     }
-    
+
     /**
      * TODO #2: 주문을 생성하는 API 구현
      * 구현목록:
@@ -97,7 +101,7 @@ public class OrderController {
      * 2. orderService.placeOrder 호출
      * 3. 주문 생성시 HTTP 201 CREATED 반환
      * 4. 필요한 DTO 생성
-     * 
+     *
      * Request body 예시:
      * {
      *   "customerName": "John Doe",
